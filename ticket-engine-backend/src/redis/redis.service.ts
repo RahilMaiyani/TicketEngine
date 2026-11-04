@@ -14,7 +14,7 @@ const RESERVE_SEAT_LUA = `
   if redis.call('SISMEMBER', soldKey, seatNumber) == 1 then
     return -1 -- ALREADY_SOLD
   end
-  
+
   -- 2. Check if seat is currently held (SET NX EX)
   -- If holdKey exists, return -2 (CURRENTLY_HELD)
   local holdSet = redis.call('SET', holdKey, userId, 'NX', 'EX', ttlSeconds)
@@ -72,6 +72,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
     onModuleDestroy() {
         this.client?.disconnect();
+    }
+
+    getClient(): Redis {
+        return this.client;
     }
 
     async reserveSeat(

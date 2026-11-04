@@ -12,6 +12,7 @@ import { RedisModule } from './redis/redis.module.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { ReservationsModule } from './reservations/reservations.module.js';
+import { OrdersModule } from './orders/orders.module.js';
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -49,6 +50,7 @@ AppModule = __decorate([
                 }
             }),
             ReservationsModule,
+            OrdersModule,
         ],
         controllers: [AppController],
         providers: [AppService],
