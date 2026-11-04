@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum SeatStatus {
+  AVAILABLE
+  HELD
+  CONFIRMED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+model Event {
+  id      String  @id @default(uuid())
+  title   String
+  description String?
+  startsAt DateTime
+  totalSeats Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  seats  Seat[]
+  reservations Reservation[]
+
+  @@map("events")
+}
+
+model Seat {
+  id      String @id @default(uuid())
+  eventId String
+  seatNumber String
+  row     String
+  number  Int
+  price   Decimal @db.Decimal(10, 2)
+  status  SeatStatus @default(AVAILABLE)
+  version Int @default(0)
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  reservations  Reservation[]
+
+  @@unique([eventId, seatNumber])
+  @@index([eventId, status])
+  @@map("seats")
+}
+
+model Reservation {
+  id              String  @id @default(uuid())
+  eventId         String
+  seatId          String
+  userId          String
+  status          ReservationStatus @default(PENDING)
+  expiresAt       DateTime
+  idempotencyKey  String? @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  seat Seat @relation(fields: [seatId], references: [id], onDelete: Restrict)
+
+  @@index([seatId, status]) 
+  @@index([expiresAt, status])
+  @@map("reservations")
+}
+
+model Order {
+  id              String  @id  @default(uuid())
+  reservationId   String  @unique
+  userId          String
+  amount          Decimal @db.Decimal(10, 2)
+  paymentStatus   String 
+  idempotencyKey  String @unique
+  createdAt       DateTime  @default(now())
+
+  @@map("orders")
+}
