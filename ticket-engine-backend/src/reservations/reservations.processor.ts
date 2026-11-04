@@ -55,7 +55,7 @@ export class ReservationsProcessor extends WorkerHost {
             await this.redis.releaseSeat(eventId, seatNumber, userId, true);
 
             this.logger.warn(
-                `[Hold Expired] Seat ${seatNumber} released back to availbale inventory.`,
+                `[Hold Expired] Seat ${seatNumber} released back to available inventory.`,
             );
         }
     }

@@ -48,7 +48,7 @@ let OrdersService = OrdersService_1 = class OrdersService {
                 throw new NotFoundException("reservation not found.");
             }
             if (reservation.status === 'EXPIRED') {
-                throw new ConflictException("Your 10-min hol has expired. Please select a seat again.");
+                throw new ConflictException("Your 10-min hold has expired. Please select a seat again.");
             }
             if (reservation.status === 'CONFIRMED') {
                 throw new ConflictException('This reservation has already been paid for.');
