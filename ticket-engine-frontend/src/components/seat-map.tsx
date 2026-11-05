@@ -1,7 +1,9 @@
+'use client';
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
 import { Clock, ShieldCheck, Ticket } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Seat {
     id: string;
@@ -23,6 +25,8 @@ export default function SeatMap() {
         seatNumber: string;
         expiresAt: string;
     } | null>(null);
+    const activeReservationRef = useRef(activeReservation);
+
     const [timeLeft, setTimeLeft] = useState<number>(0);
     const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
     const [orderConfirmed, setOrderConfirmed] = useState<any>(null);
@@ -35,6 +39,10 @@ export default function SeatMap() {
             return res.json();
         },
     });
+
+    useEffect(() => {
+        activeReservationRef.current = activeReservation;
+    }, [activeReservation]);
 
     useEffect(() => {
         const sse = new EventSource(`${API_URL}/events/${EVENT_ID}/seats/stream`);
@@ -70,7 +78,7 @@ export default function SeatMap() {
         return () => {
             sse.close();
         };
-    }, [queryClient, activeReservation]);
+    }, [queryClient]);
 
     useEffect(() => {
         if (!activeReservation) return;
@@ -119,13 +127,13 @@ export default function SeatMap() {
 
             setSelectedSeat(seat);
             setActiveReservation({
-                id: data.resevationId,
+                id: data.reservationId,
                 seatNumber: data.seatNumber,
                 expiresAt: data.expiresAt,
             });
         }
-        catch (e) {
-            alert("Network error while holding seat");
+        catch {
+            alert("Network error while holding seat.");
         }
 
     }
@@ -141,7 +149,7 @@ export default function SeatMap() {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'Idenmpotency-Key': idempotencyKey,
+                    'Idempotency-Key': idempotencyKey,
                 },
                 body: JSON.stringify({
                     reservationId: activeReservation.id,
@@ -159,7 +167,7 @@ export default function SeatMap() {
             setActiveReservation(null);
             confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
         }
-        catch (e) {
+        catch {
             alert("Checkout error")
         }
         finally {
