@@ -67,6 +67,11 @@ let ReservationsService = ReservationsService_1 = class ReservationsService {
                     }
                 });
             });
+            await this.redisService.publish(`events:${eventId}:seats`, {
+                eventId,
+                seatNumber,
+                status: "HELD",
+            });
             await this.queue.add('expire-hold', {
                 reservationId: reservation.id,
                 seatId: seat.id,

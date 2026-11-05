@@ -73,6 +73,12 @@ export class ReservationsService {
                 });
             });
 
+            await this.redisService.publish(`events:${eventId}:seats`, {
+                eventId,
+                seatNumber,
+                status: "HELD",
+            });
+
             await this.queue.add(
                 'expire-hold',
                 {

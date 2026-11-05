@@ -54,6 +54,12 @@ export class ReservationsProcessor extends WorkerHost {
 
             await this.redis.releaseSeat(eventId, seatNumber, userId, true);
 
+            await this.redis.publish(`events:${eventId}:seats`, {
+                eventId,
+                seatNumber,
+                status: "AVAILABLE",
+            });
+
             this.logger.warn(
                 `[Hold Expired] Seat ${seatNumber} released back to available inventory.`,
             );

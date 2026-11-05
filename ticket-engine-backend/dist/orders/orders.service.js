@@ -86,6 +86,11 @@ let OrdersService = OrdersService_1 = class OrdersService {
                 confirmedAt: order.createdAt,
             };
             await redis.set(idempKey, JSON.stringify({ status: 'COMPLETED', response: responsePayload }), 'EX', 86400);
+            await this.redis.publish(`events:${reservation.eventId}:seats`, {
+                eventId: reservation.eventId,
+                seatNumber: reservation.seat.seatNumber,
+                status: "CONFIRMED",
+            });
             this.logger.log(`[Order Completed] Seat ${reservation.seat.seatNumber} permanently confirmed for ${order.userId}`);
             return responsePayload;
         }

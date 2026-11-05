@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { ReservationsModule } from './reservations/reservations.module.js';
 import { OrdersModule } from './orders/orders.module.js';
+import { EventsModule } from './events/events.module.js';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { OrdersModule } from './orders/orders.module.js';
     }),
     ReservationsModule,
     OrdersModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
