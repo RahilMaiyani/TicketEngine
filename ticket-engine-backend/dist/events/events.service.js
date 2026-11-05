@@ -46,6 +46,9 @@ let EventsService = EventsService_1 = class EventsService {
                 else {
                     this.logger.log(`Client subscribed to SSE feed for channel: ${channel}`);
                 }
+            }).catch((err) => {
+                this.logger.error(`Failed to subscribe to channel ${channel}:`, err);
+                observer.error(err);
             });
             const messageHandler = (chan, message) => {
                 if (chan === channel) {
