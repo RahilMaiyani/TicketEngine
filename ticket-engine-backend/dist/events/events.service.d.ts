@@ -8,8 +8,8 @@ export declare class EventsService {
     constructor(prisma: PrismaService, redis: RedisService);
     getSeatsSnapshot(eventId: string): Promise<{
         number: number;
-        id: string;
         seatNumber: string;
+        id: string;
         row: string;
         price: import("@prisma/client-runtime-utils").Decimal;
         status: import("@prisma/client").$Enums.SeatStatus;

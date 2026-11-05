@@ -67,7 +67,6 @@ export class ReservationsService {
                         seatId: seat.id,
                         userId,
                         status: "PENDING",
-                        idempotencyKey: Date.now().toString(),
                         expiresAt,
                     }
                 });

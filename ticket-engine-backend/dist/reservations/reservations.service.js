@@ -62,7 +62,6 @@ let ReservationsService = ReservationsService_1 = class ReservationsService {
                         seatId: seat.id,
                         userId,
                         status: "PENDING",
-                        idempotencyKey: Date.now().toString(),
                         expiresAt,
                     }
                 });
