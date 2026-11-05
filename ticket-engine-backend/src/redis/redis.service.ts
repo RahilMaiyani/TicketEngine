@@ -2,7 +2,6 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 
-// Lua Scripts
 const RESERVE_SEAT_LUA = `
   local soldKey = KEYS[1]
   local holdKey = KEYS[2]
@@ -46,6 +45,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(RedisService.name);
     private client: Redis;
 
+    private subClient: Redis;
+
     constructor(private configService: ConfigService) { }
 
     onModuleInit() {
@@ -56,9 +57,19 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
                 tls: redisUrl.startsWith('rediss://') ? {} : undefined,
                 maxRetriesPerRequest: null,
             });
+            this.subClient = new Redis(redisUrl, {
+                tls: redisUrl.startsWith('rediss://') ? {} : undefined,
+                maxRetriesPerRequest: null,
+            });
         }
         else {
             this.client = new Redis({
+                host: this.configService.get<string>('REDIS_HOST', 'localhost'),
+                port: Number(this.configService.get<number>('REDIS_PORT', 6379)),
+                password: this.configService.get<string>('REDIS_PASSWORD'),
+                maxRetriesPerRequest: null,
+            });
+            this.subClient = new Redis({
                 host: this.configService.get<string>('REDIS_HOST', 'localhost'),
                 port: Number(this.configService.get<number>('REDIS_PORT', 6379)),
                 password: this.configService.get<string>('REDIS_PASSWORD'),
@@ -72,10 +83,16 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
     onModuleDestroy() {
         this.client?.disconnect();
+        this.subClient?.disconnect();
     }
 
     getClient(): Redis {
         return this.client;
+    }
+
+
+    getSubscriberClient(): Redis {
+        return this.subClient;
     }
 
     async reserveSeat(
@@ -112,4 +129,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             force ? 'true' : 'false',
         )) as number;
     }
+
+    async publish(channel: string, message: any): Promise<number> {
+        const payload = typeof message === 'string' ? message : JSON.stringify(message);
+        return this.client.publish(channel, payload);
+    }
+
 }

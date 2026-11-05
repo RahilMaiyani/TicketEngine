@@ -4,19 +4,22 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { HoldSeatDto } from './dto/hold-seat.dto.js';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ReservationsService {
     private readonly logger = new Logger(ReservationsService.name);
-
-    private readonly HOLD_TTL_SECONDS = 600;
+    private readonly HOLD_TTL_SECONDS: number;
 
     constructor(
         private readonly prismaService: PrismaService,
         private readonly redisService: RedisService,
+        private readonly configService: ConfigService,
         @InjectQueue('reservations-queue') private readonly queue: Queue,
 
-    ) { }
+    ) {
+        this.HOLD_TTL_SECONDS = this.configService.get<number>("HOLD_TTL_SECONDS") || 600;
+    }
 
     async holdSeat(dto: HoldSeatDto) {
         const { eventId, seatNumber, userId } = dto;
@@ -64,6 +67,7 @@ export class ReservationsService {
                         seatId: seat.id,
                         userId,
                         status: "PENDING",
+                        idempotencyKey: Date.now().toString(),
                         expiresAt,
                     }
                 });

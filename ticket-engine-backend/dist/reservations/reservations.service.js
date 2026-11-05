@@ -16,16 +16,20 @@ import { RedisService } from '../redis/redis.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
+import { ConfigService } from '@nestjs/config';
 let ReservationsService = ReservationsService_1 = class ReservationsService {
     prismaService;
     redisService;
+    configService;
     queue;
     logger = new Logger(ReservationsService_1.name);
-    HOLD_TTL_SECONDS = 600;
-    constructor(prismaService, redisService, queue) {
+    HOLD_TTL_SECONDS;
+    constructor(prismaService, redisService, configService, queue) {
         this.prismaService = prismaService;
         this.redisService = redisService;
+        this.configService = configService;
         this.queue = queue;
+        this.HOLD_TTL_SECONDS = this.configService.get("HOLD_TTL_SECONDS") || 600;
     }
     async holdSeat(dto) {
         const { eventId, seatNumber, userId } = dto;
@@ -58,6 +62,7 @@ let ReservationsService = ReservationsService_1 = class ReservationsService {
                         seatId: seat.id,
                         userId,
                         status: "PENDING",
+                        idempotencyKey: Date.now().toString(),
                         expiresAt,
                     }
                 });
@@ -99,9 +104,10 @@ let ReservationsService = ReservationsService_1 = class ReservationsService {
 };
 ReservationsService = ReservationsService_1 = __decorate([
     Injectable(),
-    __param(2, InjectQueue('reservations-queue')),
+    __param(3, InjectQueue('reservations-queue')),
     __metadata("design:paramtypes", [PrismaService,
         RedisService,
+        ConfigService,
         Queue])
 ], ReservationsService);
 export { ReservationsService };

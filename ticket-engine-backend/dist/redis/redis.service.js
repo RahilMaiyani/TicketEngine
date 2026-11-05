@@ -51,6 +51,7 @@ let RedisService = RedisService_1 = class RedisService {
     configService;
     logger = new Logger(RedisService_1.name);
     client;
+    subClient;
     constructor(configService) {
         this.configService = configService;
     }
@@ -58,6 +59,10 @@ let RedisService = RedisService_1 = class RedisService {
         const redisUrl = this.configService.get('REDIS_URL');
         if (redisUrl) {
             this.client = new Redis(redisUrl, {
+                tls: redisUrl.startsWith('rediss://') ? {} : undefined,
+                maxRetriesPerRequest: null,
+            });
+            this.subClient = new Redis(redisUrl, {
                 tls: redisUrl.startsWith('rediss://') ? {} : undefined,
                 maxRetriesPerRequest: null,
             });
@@ -69,15 +74,25 @@ let RedisService = RedisService_1 = class RedisService {
                 password: this.configService.get('REDIS_PASSWORD'),
                 maxRetriesPerRequest: null,
             });
+            this.subClient = new Redis({
+                host: this.configService.get('REDIS_HOST', 'localhost'),
+                port: Number(this.configService.get('REDIS_PORT', 6379)),
+                password: this.configService.get('REDIS_PASSWORD'),
+                maxRetriesPerRequest: null,
+            });
         }
         this.client.on("connect", () => this.logger.log('Connected to Redis'));
         this.client.on('error', (err) => this.logger.error('Redis error:', err));
     }
     onModuleDestroy() {
         this.client?.disconnect();
+        this.subClient?.disconnect();
     }
     getClient() {
         return this.client;
+    }
+    getSubscriberClient() {
+        return this.subClient;
     }
     async reserveSeat(eventId, seatNumber, userId, ttlSeconds = 600) {
         const soldKey = `event:${eventId}:sold_seats`;
@@ -87,6 +102,10 @@ let RedisService = RedisService_1 = class RedisService {
     async releaseSeat(eventId, seatNumber, userId, force = false) {
         const holdKey = `event:${eventId}:seat:${seatNumber}:hold`;
         return (await this.client.eval(RELEASE_SEAT_LUA, 1, holdKey, userId, force ? 'true' : 'false'));
+    }
+    async publish(channel, message) {
+        const payload = typeof message === 'string' ? message : JSON.stringify(message);
+        return this.client.publish(channel, payload);
     }
 };
 RedisService = RedisService_1 = __decorate([

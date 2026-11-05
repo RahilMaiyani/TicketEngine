@@ -21,20 +21,20 @@ export declare class ReservationsController {
         };
         seat: {
             number: number;
-            eventId: string;
-            seatNumber: string;
             id: string;
+            eventId: string;
+            status: import("@prisma/client").$Enums.SeatStatus;
+            seatNumber: string;
             row: string;
             price: import("@prisma/client-runtime-utils").Decimal;
-            status: import("@prisma/client").$Enums.SeatStatus;
             version: number;
         };
     } & {
-        eventId: string;
-        userId: string;
         id: string;
-        status: import("@prisma/client").$Enums.ReservationStatus;
+        eventId: string;
         seatId: string;
+        userId: string;
+        status: import("@prisma/client").$Enums.ReservationStatus;
         expiresAt: Date;
         idempotencyKey: string | null;
         createdAt: Date;
