@@ -35,7 +35,6 @@ export declare class ReservationsService {
             row: string;
             price: import("@prisma/client-runtime-utils").Decimal;
             status: import("@prisma/client").$Enums.SeatStatus;
-            version: number;
         };
     } & {
         eventId: string;
@@ -44,7 +43,6 @@ export declare class ReservationsService {
         status: import("@prisma/client").$Enums.ReservationStatus;
         seatId: string;
         expiresAt: Date;
-        idempotencyKey: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;

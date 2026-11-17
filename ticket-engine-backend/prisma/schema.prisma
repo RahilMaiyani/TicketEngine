@@ -42,7 +42,6 @@ model Seat {
   number  Int
   price   Decimal @db.Decimal(10, 2)
   status  SeatStatus @default(AVAILABLE)
-  version Int @default(0)
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   reservations  Reservation[]
@@ -59,7 +58,6 @@ model Reservation {
   userId          String
   status          ReservationStatus @default(PENDING)
   expiresAt       DateTime
-  idempotencyKey  String? @unique
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

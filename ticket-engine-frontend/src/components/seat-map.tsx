@@ -93,7 +93,7 @@ export default function SeatMap() {
             if (remainingSeconds <= 0) {
                 setActiveReservation(null);
                 setSelectedSeat(null);
-                alert("Your 10-minute hold has expires!@ The seat has been returned to the pool.");
+                alert("Your 10-minute hold has expires! The seat has been returned to the pool.");
                 clearInterval(interval);
             }
         }, 1000);
@@ -186,20 +186,16 @@ export default function SeatMap() {
             {/* Header */}
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">
-                    Grand Symphony Concert
+                    Theater Seat Map
                 </h1>
-                <p className="text-slate-400 mt-2">
-                    High-Concurrency Live Seat Map with Real-Time SSE Updates
-                </p>
             </div>
-            {/* Screen / Stage Visualization */}
+
             <div className="relative mb-12">
                 <div className="w-3/4 mx-auto h-2 bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-500 rounded-full shadow-[0_0_25px_rgba(99,102,241,0.5)]" />
-                <p className="text-center text-xs tracking-widest text-slate-500 uppercase mt-2">
+                {/* <p className="text-center text-xs tracking-widest text-slate-500 uppercase mt-2">
                     STAGE / PERFORMANCE HALL
-                </p>
+                </p> */}
             </div>
-            {/* Legend */}
             <div className="flex justify-center gap-6 mb-8 text-sm">
                 <div className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded bg-emerald-500/80" />
@@ -218,7 +214,7 @@ export default function SeatMap() {
                     <span className="text-indigo-300 font-medium">Your Selection</span>
                 </div>
             </div>
-            {/* Theater Grid */}
+            {/* Theater Seat Grid */}
             <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-2xl flex flex-col items-center gap-3">
                 {rows.map((row) => (
                     <div key={row} className="flex items-center gap-2">
@@ -296,7 +292,7 @@ export default function SeatMap() {
                         </div>
                         <h3 className="text-xl font-bold text-white">Ticket Confirmed!</h3>
                         <p className="text-sm text-slate-400 mt-1">
-                            Your reservation has been permanently written to PostgreSQL.
+                            Your reservation has been booked!
                         </p>
                         <div className="bg-slate-950 p-4 rounded-xl my-4 text-left text-xs font-mono space-y-1.5 border border-slate-800">
                             <div className="flex justify-between">

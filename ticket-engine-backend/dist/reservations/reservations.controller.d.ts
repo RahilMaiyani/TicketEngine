@@ -27,7 +27,6 @@ export declare class ReservationsController {
             row: string;
             price: import("@prisma/client-runtime-utils").Decimal;
             status: import("@prisma/client").$Enums.SeatStatus;
-            version: number;
         };
     } & {
         eventId: string;
@@ -36,7 +35,6 @@ export declare class ReservationsController {
         status: import("@prisma/client").$Enums.ReservationStatus;
         seatId: string;
         expiresAt: Date;
-        idempotencyKey: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
